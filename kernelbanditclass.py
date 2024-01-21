@@ -2,7 +2,7 @@ import numpy as np
 import copy
 
 class KernelBandit():
-	def __init__(self, T, reward_func, kernel_params, dim, domain_size, noise_std=0.2, max_reward = -np.Inf, reg_domain=False):
+	def __init__(self, T, reward_func, kernel_params, dim, domain_size, noise_std=0.2, max_reward = -np.Inf, cube_domain=False):
 
 		# Set seed to ensure that the original domain is the same across iterations
 		# self.seed = seed
@@ -22,7 +22,7 @@ class KernelBandit():
 
 		self.noise_std = noise_std
 
-		self.reg_domain = reg_domain
+		self.cube_domain = cube_domain
 
 		self.sqrt3 = np.sqrt(3)
 		self.sqrt5 = np.sqrt(5)
@@ -30,11 +30,12 @@ class KernelBandit():
 	def generate_domain(self):
 
 		# np.random.seed(self._seed)
-		if self.reg_domain:
-			x0 = np.linspace(0,1,10,endpoint=False)
-			self._domain = np.reshape(np.array(np.meshgrid(x0,x0,x0,x0)), (4, 10000))
-		else:
+		if self.cube_domain:
 			self._domain = np.random.rand(self.dim, self.domain_size)
+		else:
+			self._domain = np.random.normal(self.dim, self.domain_size)
+			for i in range(self.domain_size):
+				self._domain[:, i] = self._domain[:, i]/np.linalg.norm(self._domain[:, i])
 
 		if np.isinf(self.max_reward):
 			self.max_reward = max([self.reward_func(x) for x in np.transpose(self._domain)])

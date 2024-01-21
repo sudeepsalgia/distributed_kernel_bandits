@@ -29,7 +29,7 @@ def DISUS(T_1, beta, N, bandit, tau=0.2, public_randomness=True):
 		if t == bandit.T:
 			break
 
-		p_ind = 10*np.log(N*T_j)/(N*T_j)
+		p_ind = 4*np.log(N*T_j)/(N*T_j)
 		inducing_set_idxs = np.random.random(size=T_j*N) < p_ind
 		Z = X_serv[:, inducing_set_idxs]
 		n_inducing_pts = np.sum(inducing_set_idxs)

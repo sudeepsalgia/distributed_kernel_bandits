@@ -7,23 +7,25 @@ from DisKernelUCB import *
 from ApproxDisKernelUCB import *
 from NKernelUCB import *
 
-def branin(x):
-	u = 15*x[0] - 5
-	v = 15*x[1]
+A_hartmann = np.array([[10, 3, 17, 3.5, 1.7, 8], [0.05, 10, 17, 0.1, 8, 14], [3, 3.5, 1.7, 10, 17, 8], [17, 8, 0.05, 10, 0.1, 14]])
+P_hartmann = 10**(-4) * np.array([[1312, 1696, 5569, 124, 8283, 5886], [2329, 4135, 8307, 3736, 1004, 9991], [2348, 1451, 3522, 2883, 3047, 6650], [4047, 8828, 8732, 5743, 1091, 381]])
+alpha_hartmann = np.array([1.0, 1.2, 3.0, 3.2])
 
-	term1 = v - 5.1*(u**2)/(4*(np.pi**2)) + 5*u/np.pi - 6
-	term2 = (10 - 10/(8*np.pi)) * np.cos(u)
+def hartmann_4D(x):
 
-	val = -(term1**2 + term2 - 44.81) / 51.95
+	val = 0
+	for i in range(4):
+		val += alpha_hartmann[i]*np.exp(-np.sum(A_hartmann[i, :4]*((x - P_hartmann[i, :4])**2)))
+
 	return val
 
 
 T = 100
-max_branin = 1.0474
+max_hartmann = 3.731
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-bandit = KernelBandit(T=T, reward_func=branin, kernel_params=[np.Inf, 0.2], dim=2, domain_size=2000, noise_std=0.2, max_reward=max_branin, cube_domain=True)
+bandit = KernelBandit(T=T, reward_func=hartmann_4D, kernel_params=[np.Inf, 1], dim=4, domain_size=2000, noise_std=0.2, cube_domain=True)
 bandit.generate_domain()
 
 # Set parameters
@@ -33,7 +35,6 @@ N = 10
 D_DisKernelUCB = T/(N*np.log(N*T))
 D_ApproxDisKernelUCB = 1/N
 bar_q = 4
-
 
 n_loops = 2
 reg_ApproxDisKernelUCB = np.zeros((n_loops, T))

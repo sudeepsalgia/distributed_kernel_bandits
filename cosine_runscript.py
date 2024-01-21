@@ -7,23 +7,21 @@ from DisKernelUCB import *
 from ApproxDisKernelUCB import *
 from NKernelUCB import *
 
-def branin(x):
-	u = 15*x[0] - 5
-	v = 15*x[1]
+d = 10
+theta_star = np.random.normal(d)
+theta_star = theta_star/np.linalg.norm(theta_star)
 
-	term1 = v - 5.1*(u**2)/(4*(np.pi**2)) + 5*u/np.pi - 6
-	term2 = (10 - 10/(8*np.pi)) * np.cos(u)
+def cosine_ip(x):
 
-	val = -(term1**2 + term2 - 44.81) / 51.95
-	return val
+	return np.cos(3*np.dot(x, theta_star))
+
 
 
 T = 100
-max_branin = 1.0474
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-bandit = KernelBandit(T=T, reward_func=branin, kernel_params=[np.Inf, 0.2], dim=2, domain_size=2000, noise_std=0.2, max_reward=max_branin, cube_domain=True)
+bandit = KernelBandit(T=T, reward_func=cosine_ip, kernel_params=[np.Inf, 1], dim=d, domain_size=2000, noise_std=0.2, cube_domain=False)
 bandit.generate_domain()
 
 # Set parameters
@@ -33,7 +31,6 @@ N = 10
 D_DisKernelUCB = T/(N*np.log(N*T))
 D_ApproxDisKernelUCB = 1/N
 bar_q = 4
-
 
 n_loops = 2
 reg_ApproxDisKernelUCB = np.zeros((n_loops, T))
