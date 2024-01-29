@@ -33,12 +33,13 @@ class KernelBandit():
 		if self.cube_domain:
 			self._domain = np.random.rand(self.dim, self.domain_size)
 		else:
-			self._domain = np.random.normal(self.dim, self.domain_size)
+			self._domain = np.random.normal(size=(self.dim, self.domain_size))
 			for i in range(self.domain_size):
 				self._domain[:, i] = self._domain[:, i]/np.linalg.norm(self._domain[:, i])
 
 		if np.isinf(self.max_reward):
-			self.max_reward = max([self.reward_func(x) for x in np.transpose(self._domain)])
+			self.max_reward = np.max([self.reward_func(x) for x in np.transpose(self._domain)])
+			print(self.max_reward)
 
 		# x = np.linspace(0,1,30)
 		# X, Y = np.meshgrid(x,x)

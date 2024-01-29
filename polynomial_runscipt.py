@@ -8,18 +8,18 @@ from ApproxDisKernelUCB import *
 from NKernelUCB import *
 
 d = 10
-theta_star = np.random.normal(d)
+theta_star = np.random.normal(size=d)
 theta_star = theta_star/np.linalg.norm(theta_star)
 
 def polynomial_ip(x):
 
 	z = np.dot(x, theta_star)
 
-	return np.cos(z**3 - 3*(z**2) + 3*z + 3)
+	return (z**3 - 3*(z**2) + 3*z + 3)
 
 
 
-T = 100
+T = 20
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 

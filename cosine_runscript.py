@@ -8,7 +8,7 @@ from ApproxDisKernelUCB import *
 from NKernelUCB import *
 
 d = 10
-theta_star = np.random.normal(d)
+theta_star = np.random.normal(size=d)
 theta_star = theta_star/np.linalg.norm(theta_star)
 
 def cosine_ip(x):
@@ -17,7 +17,7 @@ def cosine_ip(x):
 
 
 
-T = 100
+T = 20
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
@@ -32,7 +32,7 @@ D_DisKernelUCB = T/(N*np.log(N*T))
 D_ApproxDisKernelUCB = 1/N
 bar_q = 4
 
-n_loops = 2
+n_loops = 1
 reg_ApproxDisKernelUCB = np.zeros((n_loops, T))
 reg_DISUS = np.zeros((n_loops, T))
 reg_DisKernelUCB = np.zeros((n_loops, T))
