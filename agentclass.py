@@ -107,7 +107,6 @@ class agent():
 			samp_idx = np.argmax(UCB)
 
 		self.sampled_idxs[self.n_samp] = int(samp_idx)
-		# print(self.sampled_idxs.dtype)
 
 		### n_samp and local_time are the same in this case
 
@@ -116,18 +115,18 @@ class agent():
 		self.regret[self.local_time] = -f_t
 		self.y[self.n_samp] =  f_t + np.random.normal(scale=self.tau)
 
-		self.log_det_K += (self.sigma[samp_idx]**2)
+		self.log_det_K += (self.sigma[samp_idx]**2)*self.tau
 
 		if self.n_approx_pts > 0:
 			x_diff = self.approximating_set[:, 0:self.n_approx_pts] - np.reshape(self.X[:, self.n_samp], (self.bandit.dim, 1))
 			k_vec = self.bandit.kernel(np.sqrt(np.sum(x_diff**2, axis=0)))
 			z_new = k_vec @ self.K_inv 
-			# self.Z_local = np.append(self.Z_local, z_new, axis=0)
 			self.Zy_local += z_new*self.y[self.n_samp]
 
-			self.ZT_Z_local += np.transpose(z_new) @ z_new
+
+			self.ZT_Z_local += np.outer(z_new, z_new)
 			b = z_new @ self.ZT_Z_inv_local 
-			self.ZT_Z_inv_local -= (np.transpose(b) @ b)/(1 + z_new @ np.transpose(b))
+			self.ZT_Z_inv_local -= (np.outer(b, b))/(1 + z_new @ np.transpose(b))
 
 			theta = self.ZT_Z_inv_local @ self.Zy_local
 			K_approx_inv_local = self.ZT_Z_local @ self.ZT_Z_inv_local
@@ -136,7 +135,7 @@ class agent():
 				x_t = np.reshape(self.bandit.domain[:, i], (self.bandit.dim, 1))
 				x_diff = self.approximating_set - x_t
 				k_vec = self.bandit.kernel(np.sqrt(np.sum(x_diff**2, axis=0))) @ self.K_inv
-				self.sigma[i] = np.sqrt(self.tau*(1 - k_vec @ (K_approx_inv_local @ np.transpose(k_vec))))
+				self.sigma[i] = np.sqrt((1 - k_vec @ (K_approx_inv_local @ np.transpose(k_vec)))/self.tau)  
 				self.mu[i] = np.dot(k_vec, theta)
 
 		self.n_samp += 1

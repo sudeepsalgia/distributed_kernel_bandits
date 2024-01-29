@@ -17,7 +17,7 @@ def cosine_ip(x):
 
 
 
-T = 20
+T = 100
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
@@ -29,8 +29,8 @@ T_1 = 5
 beta = 1
 N = 10
 D_DisKernelUCB = T/(N*np.log(N*T))
-D_ApproxDisKernelUCB = 1/N
-bar_q = 4
+D_ApproxDisKernelUCB = 10
+bar_q = 0.08
 
 n_loops = 1
 reg_ApproxDisKernelUCB = np.zeros((n_loops, T))
@@ -57,29 +57,29 @@ for i in range(n_loops):
 	bandit.reset_domain()
 
 	start = time.time()
-	reg_ApproxDisKernelUCB[i, :], comm_cost_ApproxDisKernelUCB[i, :] = ApproxDisKernelUCB(beta=beta, N=N, bandit=bandit, D=D_ApproxDisKernelUCB, bar_q=bar_q) 
+	reg_ApproxDisKernelUCB[i, :], comm_cost_ApproxDisKernelUCB[i, :] = ApproxDisKernelUCB(beta=5, N=N, bandit=bandit, D=D_ApproxDisKernelUCB, bar_q=bar_q) 
 	end = time.time()
 	# time_BPE[i] = (end - start)
 
-	bandit.reset_domain()
+	# bandit.reset_domain()
 
-	start = time.time()	
-	reg_DISUS[i, :], comm_cost_DISUS[i, :] = DISUS(T_1=T_1, beta=beta, N=N, bandit=bandit,)
-	end = time.time()
+	# start = time.time()	
+	# reg_DISUS[i, :], comm_cost_DISUS[i, :] = DISUS(T_1=T_1, beta=beta, N=N, bandit=bandit,)
+	# end = time.time()
 	# time_REDS[i] = (end - start)
 
-	bandit.reset_domain()
+	# bandit.reset_domain()
 
-	start = time.time()
-	reg_DisKernelUCB[i, :], comm_cost_DisKernelUCB[i, :] = DisKernelUCB(beta=beta, N=N, bandit=bandit, D=D_DisKernelUCB) 
-	end = time.time()
+	# start = time.time()
+	# reg_DisKernelUCB[i, :], comm_cost_DisKernelUCB[i, :] = DisKernelUCB(beta=beta, N=N, bandit=bandit, D=D_DisKernelUCB) 
+	# end = time.time()
 	# time_GP_ThreDS[i] = (end - start)
 
-	bandit.reset_domain()
+	# bandit.reset_domain()
 
-	start = time.time()
-	reg_NKernelUCB[i, :], comm_cost_NKernelUCB[i, :] = NKernelUCB(beta=beta, N=N, bandit=bandit) 
-	end = time.time()
+	# start = time.time()
+	# reg_NKernelUCB[i, :], comm_cost_NKernelUCB[i, :] = NKernelUCB(beta=beta, N=N, bandit=bandit) 
+	# end = time.time()
 	# time_BPE[i] = (end - start)
 
 	bandit.reset_domain()

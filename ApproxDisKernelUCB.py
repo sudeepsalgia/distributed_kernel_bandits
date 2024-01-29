@@ -1,6 +1,7 @@
 import numpy as np
 from agentclass import *
 import copy
+from scipy.linalg import sqrtm
 
 def ApproxDisKernelUCB(beta, N, bandit, D, bar_q, tau=0.2):
 	log_det_K_global = 0
@@ -19,7 +20,7 @@ def ApproxDisKernelUCB(beta, N, bandit, D, bar_q, tau=0.2):
 			condition = (agents[n].log_det_K - log_det_K_global)
 			trigger = (trigger or (condition > D))
 
-		if trigger:
+		if (trigger or (t == 10)):  # Added an additional condition to ensure that the first batch is small
 			log_det_K_global = 0
 			approximating_set_idxs = np.array([])
 			for n in range(N):
@@ -27,18 +28,20 @@ def ApproxDisKernelUCB(beta, N, bandit, D, bar_q, tau=0.2):
 
 			approximating_set_idxs = np.unique(approximating_set_idxs).astype(int)
 			n_approx_pts = len(approximating_set_idxs)
+			print(n_approx_pts)
 
 
 			approximating_set = bandit.domain[:, approximating_set_idxs]
 
 			x_diff = 0
 			for d in range(bandit.dim):
-				x_samp = np.tile(approximating_set[d], (n_approx_pts, 1))
+				x_samp = np.tile(approximating_set[d, :], (n_approx_pts, 1))
 				x_diff += (x_samp - np.transpose(x_samp))**2
 
 			K = bandit.kernel(np.sqrt(x_diff))
 
-			K_inv = np.linalg.pinv(K)
+			K_inv = sqrtm(np.linalg.pinv(K))
+
 			for n in range(N):
 				agents[n].approximating_set = approximating_set
 				agents[n].n_approx_pts = n_approx_pts
@@ -60,7 +63,7 @@ def ApproxDisKernelUCB(beta, N, bandit, D, bar_q, tau=0.2):
 				x_t = np.reshape(bandit.domain[:, i], (bandit.dim, 1))
 				x_diff = approximating_set - x_t
 				k_vec = bandit.kernel(np.sqrt(np.sum(x_diff**2, axis=0))) @ K_inv
-				sigma_sq_vec[i] = tau*(1 - k_vec @ (K_approx_inv @ np.transpose(k_vec)))
+				sigma_sq_vec[i] = (1 - k_vec @ (K_approx_inv @ np.transpose(k_vec))/tau) 
 
 			for n in range(N):
 				agents[n].Zy_local = copy.deepcopy(Zy_global)

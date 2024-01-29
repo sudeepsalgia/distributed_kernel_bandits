@@ -39,7 +39,6 @@ class KernelBandit():
 
 		if np.isinf(self.max_reward):
 			self.max_reward = np.max([self.reward_func(x) for x in np.transpose(self._domain)])
-			print(self.max_reward)
 
 		# x = np.linspace(0,1,30)
 		# X, Y = np.meshgrid(x,x)
